@@ -10,7 +10,8 @@ public record TaskResponse(
     String title,
     String description,
     Boolean completed,
-    LocalDateTime createdAt
+    LocalDateTime createdAt,
+    CategoryResponse category
 ) {
 
 }
