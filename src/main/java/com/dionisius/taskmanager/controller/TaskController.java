@@ -3,6 +3,8 @@ package com.dionisius.taskmanager.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dionisius.taskmanager.dto.TaskRequest;
+import com.dionisius.taskmanager.dto.TaskResponse;
 import com.dionisius.taskmanager.entity.Task;
 import com.dionisius.taskmanager.service.TaskService;
 
@@ -43,14 +45,14 @@ public class TaskController {
 
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
-        Task savedTask = taskService.createTask(task);
+    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskRequest task) {
+        TaskResponse savedTask = taskService.createTask(task);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
     }
     
     @PutMapping("/{id}")
-    public Task updateTask(@PathVariable Long id,
-                           @Valid @RequestBody Task updatedTask) {
+    public TaskResponse updateTask(@PathVariable Long id,
+                           @Valid @RequestBody TaskRequest updatedTask) {
         return taskService.updateTask(id, updatedTask);
     }
 
