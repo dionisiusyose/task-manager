@@ -1,8 +1,9 @@
 package com.dionisius.taskmanager.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.dionisius.taskmanager.dto.TaskRequest;
@@ -26,13 +27,15 @@ public class TaskService {
     }
 
     public List<TaskResponse> getAllTasks(){
-        List<Task> retrievedTasks = taskRepository.findAll();
-        List<TaskResponse> responses = new ArrayList<>();
+        final List<Task> completedTasks = taskRepository.findAll();
+        return completedTasks.stream()
+            .map(taskMapper::toResponse)
+            .toList();
+    }
 
-        for (Task task : retrievedTasks) {
-            responses.add(taskMapper.toResponse(task));
-        }
-        return responses;
+    public Page<TaskResponse> getAllTasks(Pageable pageable){
+        Page<Task> retrievedTasks = taskRepository.findAll(pageable);
+        return retrievedTasks.map(taskMapper::toResponse);
     }
 
     public TaskResponse getTaskById(Long id){
@@ -64,23 +67,22 @@ public class TaskService {
     }
 
     public List<TaskResponse> getTasksByCompletionStatus(boolean status){
-        List<Task> retrievedTasks = taskRepository.findByCompleted(status);
-        List<TaskResponse> responses = new ArrayList<>();
+        final List<Task> completedTasks = taskRepository.findByCompleted(status);
+        return completedTasks.stream()
+            .map(taskMapper::toResponse)
+            .toList();
+    }
 
-        for (Task task : retrievedTasks) {
-            responses.add(taskMapper.toResponse(task));
-        }
-        return responses;
+    public Page<TaskResponse> getTasksByCompletionStatus(boolean status, Pageable pageable){
+        final Page<Task> completedTasks = taskRepository.findByCompleted(status, pageable);
+        return completedTasks.map(taskMapper::toResponse);
     }
 
     public List<TaskResponse> searchTasksByTitle(String title){
-        List<Task> retrievedTasks = taskRepository.findByTitleContainingIgnoreCase(title);
-        List<TaskResponse> responses = new ArrayList<>();
-
-        for (Task task : retrievedTasks) {
-            responses.add(taskMapper.toResponse(task));
-        }
-        return responses;
+        final List<Task> completedTasks = taskRepository.findByTitleContainingIgnoreCase(title);
+        return completedTasks.stream()
+            .map(taskMapper::toResponse)
+            .toList();
     }
 
 }
