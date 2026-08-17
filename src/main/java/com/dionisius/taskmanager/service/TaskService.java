@@ -1,5 +1,6 @@
 package com.dionisius.taskmanager.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -24,13 +25,21 @@ public class TaskService {
         this.taskMapper = taskMapper;
     }
 
-    public List<Task> getAllTasks(){
-        return taskRepository.findAll();
+    public List<TaskResponse> getAllTasks(){
+        List<Task> retrievedTasks = taskRepository.findAll();
+        List<TaskResponse> responses = new ArrayList<>();
+
+        for (Task task : retrievedTasks) {
+            responses.add(taskMapper.toResponse(task));
+        }
+        return responses;
     }
 
-    public Task getTaskById(Long id){
-        return taskRepository.findById(id)
+    public TaskResponse getTaskById(Long id){
+        Task retrievedTask = taskRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException(id));
+
+        return taskMapper.toResponse(retrievedTask);
     }
 
     public TaskResponse createTask(TaskRequest task){
@@ -54,12 +63,24 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
-    public List<Task> getTasksByCompletionStatus(boolean status){
-        return taskRepository.findByCompleted(status);
+    public List<TaskResponse> getTasksByCompletionStatus(boolean status){
+        List<Task> retrievedTasks = taskRepository.findByCompleted(status);
+        List<TaskResponse> responses = new ArrayList<>();
+
+        for (Task task : retrievedTasks) {
+            responses.add(taskMapper.toResponse(task));
+        }
+        return responses;
     }
 
-    public List<Task> searchTasksByTitle(String title){
-        return taskRepository.findByTitleContainingIgnoreCase(title);
+    public List<TaskResponse> searchTasksByTitle(String title){
+        List<Task> retrievedTasks = taskRepository.findByTitleContainingIgnoreCase(title);
+        List<TaskResponse> responses = new ArrayList<>();
+
+        for (Task task : retrievedTasks) {
+            responses.add(taskMapper.toResponse(task));
+        }
+        return responses;
     }
 
 }

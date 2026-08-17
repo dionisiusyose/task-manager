@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dionisius.taskmanager.dto.TaskRequest;
 import com.dionisius.taskmanager.dto.TaskResponse;
-import com.dionisius.taskmanager.entity.Task;
 import com.dionisius.taskmanager.service.TaskService;
 
 import jakarta.validation.Valid;
@@ -34,12 +33,12 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> getAllTasks() {
+    public List<TaskResponse> getAllTasks() {
         return taskService.getAllTasks();
     }
 
     @GetMapping("/{id}")
-    public Task getTaskById(@PathVariable Long id) {
+    public TaskResponse getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id);
     }
 
@@ -63,12 +62,12 @@ public class TaskController {
     }
 
     @GetMapping("/completed/{status}")
-    public List<Task> getTaskByCompletions(@PathVariable boolean status) {
+    public List<TaskResponse> getTaskByCompletions(@PathVariable boolean status) {
         return taskService.getTasksByCompletionStatus(status);
     }
     
     @GetMapping("/search")
-    public  List<Task>  searchTasksByTitle(@RequestParam String title) {
+    public  List<TaskResponse>  searchTasksByTitle(@RequestParam String title) {
         return taskService.searchTasksByTitle(title);
     }
     
