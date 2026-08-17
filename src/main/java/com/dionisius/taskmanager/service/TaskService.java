@@ -1,11 +1,11 @@
 package com.dionisius.taskmanager.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.dionisius.taskmanager.entity.Task;
+import com.dionisius.taskmanager.exception.TaskNotFoundException;
 import com.dionisius.taskmanager.repository.TaskRepository;
 
 import jakarta.transaction.Transactional;
@@ -23,31 +23,29 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public Optional<Task> getTaskById(Long id){
-        return taskRepository.findById(id);
+    public Task getTaskById(Long id){
+        return taskRepository.findById(id)
+            .orElseThrow(() -> new TaskNotFoundException(id));
     }
 
     public Task createTask(Task task){
         return taskRepository.save(task);
     }
 
-    public Optional<Task> updateTask(Long id, Task updatedTask){
-        return taskRepository.findById(id)
-            .map(task -> {
-                task.setTitle(updatedTask.getTitle());
-                task.setDescription(updatedTask.getDescription());
-                task.setCompleted(updatedTask.getCompleted());
-                return taskRepository.save(task);
-            });
+    public Task updateTask(Long id, Task updatedTask){
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException(id));
+
+        task.setTitle(updatedTask.getTitle());
+        task.setDescription(updatedTask.getDescription());
+        task.setCompleted(updatedTask.getCompleted());
+        return taskRepository.save(task);
     }
 
-    public boolean deleteTask(Long id){
-        return taskRepository.findById(id)
-            .map(task -> {
-                taskRepository.delete(task);
-                return true;
-            })
-            .orElse(false);
+    public void deleteTask(Long id){
+        Task task = taskRepository.findById(id)
+            .orElseThrow(() -> new TaskNotFoundException(id));
+        taskRepository.delete(task);
     }
 
     public List<Task> getTasksByCompletionStatus(boolean status){
