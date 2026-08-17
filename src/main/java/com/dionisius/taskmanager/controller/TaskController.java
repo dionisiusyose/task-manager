@@ -38,6 +38,43 @@ public class TaskController {
         this.taskService = taskService;
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Map<String, Object>> searchTasks(
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false) Boolean completed,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "createdAt") String sortBy,
+        @RequestParam(defaultValue = "DESC") String sortDir
+    ) {
+        Sort sort = sortDir.equalsIgnoreCase("ASC") ?
+            Sort.by(sortBy).ascending() :
+            Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<TaskResponse> taskPage;
+
+        if (title != null && completed !=null) {
+            taskPage = taskService.getTasksByTitleAndCompletion(title, completed, pageable);
+        } else if (title != null){
+            taskPage = taskService.searchTasksByTitle(title, pageable);
+        } else if(completed != null){
+            taskPage = taskService.getTasksByCompletionStatus(completed, pageable);
+        } else {
+            taskPage = taskService.getAllTasks(pageable);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("tasks", taskPage);
+        response.put("currentPage", taskPage.getNumber());
+        response.put("totalPages", taskPage.getTotalPages());
+        response.put("hasNext", taskPage.hasNext());
+        response.put("hasPrevious", taskPage.hasPrevious());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    
+
     @GetMapping
     public List<TaskResponse> getAllTasks() {
         return taskService.getAllTasks();
@@ -96,7 +133,7 @@ public class TaskController {
         return taskService.getTasksByCompletionStatus(status);
     }
     
-    @GetMapping("/search")
+    @GetMapping("/searchByTitle")
     public  List<TaskResponse>  searchTasksByTitle(@RequestParam String title) {
         return taskService.searchTasksByTitle(title);
     }
