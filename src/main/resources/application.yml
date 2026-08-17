@@ -1,6 +1,8 @@
 spring:
   application:
     name: taskmanager
+  profiles:
+    active: dev
 
   # Database configuration
   datasource:
@@ -20,7 +22,26 @@ spring:
       ddl-auto: update
     show-sql: true
 
-  # App info
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,logger,beans,mappings
+      base-path: /actuator
+    health: # ✅ digabung ke dalam SATU block 'endpoints'
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: Task Manager
+    version: 1.0.0
+    max-task-per-page: 10
+
+# App info
 app:
   name: Task Manager
   version: 1.0.0
